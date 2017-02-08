@@ -25,4 +25,8 @@ Options:
  <br>
 ssh binary given is for ubuntu 14.04 .
  <br>
-For other systems compile binary from source code provided. 
+For other systems compile binary from source code provided.
+
+# For Mac OS X and Windows
+
+You can use the docker image of the psiphon client and run psiphon on any OS. Checkout the docker folder of the repo for more detail.
