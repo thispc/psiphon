@@ -134,6 +134,7 @@ class Psiphon3Server(object):
             if key == 'Server':
                 # discovery
                 if value not in self.servers:
+                     
                     self.servers.insert(1, value)
             if key == 'SSHSessionID':
                 self.ssh_session_id = value

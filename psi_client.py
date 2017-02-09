@@ -83,9 +83,21 @@ class Data(object):
         return data
 
     def save(self):
-        with open(DATA_FILENAME+'.new', 'w') as data_file:
-            data_file.write(json.dumps(self.data))
-        os.rename(DATA_FILENAME+'.new', DATA_FILENAME)
+        
+        
+        with open('servers.dat','r') as serv_file:
+            tempdata=json.loads(serv_file.read())
+            currdata=self.data
+            
+            for i in currdata["servers"]:
+                if i not in tempdata["servers"]:
+                    print "New server Found!!!! Appending....."
+                    tempdata["servers"].append(i)
+                    
+        with open('servers.new', 'w') as data_file:
+            data_file.write(json.dumps(tempdata))
+        os.rename('servers.new', 'servers.dat');
+        
 
     def servers(self):
         return self.data['servers']
@@ -103,6 +115,7 @@ class Data(object):
             return True
         else:
             return False
+
 
 
 
@@ -182,6 +195,13 @@ def connect_to_server(data, relay, bind_all, test=False):
         print 'Testing connection to ip %s' % server.ip_address
         ssh_connection.disconnect_on_success(test_site=test)
     else:
+        with open('servers.dat','r') as serv_file:
+            tempdata=json.loads(serv_file.read())
+            top_index = tempdata["servers"].index(data.servers()[0])
+            tempdata["servers"].insert(0, tempdata["servers"].pop(top_index))
+        with open('servers.new', 'w') as data_file:
+            data_file.write(json.dumps(tempdata))
+        os.rename('servers.new', 'servers.dat');
         
         print("SERVER CONNECTED :: " + str(server.extended_config['region']))
         print "IP Address :" + str(server.ip_address)
@@ -211,10 +231,14 @@ def _test_executable(path):
 
 
 def connect(bind_all, test=False):
-
+    data = Data.load()
     while True:
+        top=data.servers()[0]
+        loc = top.find('{"webServerCertificate":'.encode('hex'))
+        ob=json.loads(top[loc:].decode('hex'))
+        
+        print "Trying to connect to "+ob["region"]+" : " + ob["ipAddress"]
 
-        data = Data.load()
 
         try:
             relay = 'SSH'
@@ -237,7 +261,7 @@ def connect(bind_all, test=False):
             if not data.move_first_server_entry_to_bottom():
                 print 'DEBUG: could not reorder servers'
                 
-            #data.save()
+            data.save()
             print 'Trying next server...'
 
 
