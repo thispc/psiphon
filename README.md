@@ -8,6 +8,7 @@ Psiphon is designed to provide you with open access to online content. Psiphon d
 
 ```
 $ git clone https://github.com/thispc/psiphon.git
+$ cd psiphon
 ```
 
 ### Prerequisites
@@ -28,18 +29,19 @@ A step by step guide :
     However an ssh binary is provided for ubuntu 14.04, it is highly recommended to compile your ssh binary to remove compatibility issues. 
     
     ```sh
-    $ cd openssh-5.9p1
-    $ ./configure
+    psiphon$ cd openssh-5.9p1
+    openssh-5.9p1$ ./configure
     ```
     
     Install the required dependencies if error occurs.
     Use make command after successful verification of dependencies.
     ```sh
-    $ make
+    openssh-5.9p1$ make
     ```
     A ssh binary will be created on successful completion of make command.
     After removing existing binary file, copy the new binary to main psiphon folder.
     ```sh
+    openssh-5.9p1$ cd ..
     psiphon$ rm ssh
     psiphon$ cp openssh-5.9p1/ssh .
     ```
@@ -98,6 +100,24 @@ A step by step guide :
     ```sh
     psiphon$ python psi_client.py -r IN -p 1234 -i 2
     ```
+    
+    In case of error:
+    example- 
+    "ImportError: No module named pexpect"
+    ```sh
+    $ sudo pip install pexpect
+    ```
+    Make alias for convenience:
+    ```sh
+    $ echo 'alias psiphon="cd ~/psiphon && python psi_client.py"' >> ~/.bashrc
+    ```
+    Now on a new terminal:
+    ```sh
+    $ psiphon -h
+    $ psiphon
+    ```
+    Psiphon should now be running successfully on your machine.
+
 ## Commands:
 ```sh
 psiphon$ python psi_client.py -h
