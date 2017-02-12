@@ -98,6 +98,15 @@ A step by step guide :
     ```sh
     psiphon$ python psi_client.py -r IN -p 1234 -i 2
     ```
+    
+    In case of error:
+    example- 
+    "ImportError: No module named pexpect"
+    ```sh
+    $ sudo pip install pexpect
+    ```
+    
+    Psiphon should now be running successfully on your machine.
 ## Commands:
 ```sh
 psiphon$ python psi_client.py -h
