@@ -62,10 +62,10 @@ class Data(object):
                     loc = i.find('{"webServerCertificate":'.encode('hex'))
                     ob=json.loads(i[loc:].decode('hex'))
                     if(ob["region"] == DATA_FILENAME or DATA_FILENAME == "ANY"):
-                        print ossh_glob
+                        
                         if(ossh_glob == False):
-                            sahi = ("OSSH" in js["capabilities"]) and (js["sshObfuscatedPort"] == 53)
-                            print sahi
+                            sahi = ("OSSH" in ob["capabilities"]) and (ob["sshObfuscatedPort"] == 53)
+                            
                             if sahi==False:
                                 continue
                         temp["servers"].append(i)
