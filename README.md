@@ -107,7 +107,15 @@ A step by step guide :
     ```sh
     $ sudo pip install pexpect
     ```
-    
+    Make alias for convenience:
+    ```sh
+    $ echo 'alias psiphon="cd ~/psiphon && python psi_client.py"' >> ~/.bashrc
+    ```
+    Now on a new terminal:
+    ```sh
+    $ psiphon -h
+    $ psiphon
+    ```
     Psiphon should now be running successfully on your machine.
 
 ## Commands:
