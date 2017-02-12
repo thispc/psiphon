@@ -8,6 +8,7 @@ Psiphon is designed to provide you with open access to online content. Psiphon d
 
 ```
 $ git clone https://github.com/thispc/psiphon.git
+$ cd psiphon
 ```
 
 ### Prerequisites
@@ -28,8 +29,8 @@ A step by step guide :
     However an ssh binary is provided for ubuntu 14.04, it is highly recommended to compile your ssh binary to remove compatibility issues. 
     
     ```sh
-    $ cd openssh-5.9p1
-    $ ./configure
+    psiphon$ cd openssh-5.9p1
+    openssh-5.9p1$ ./configure
     ```
     
     Install the required dependencies if error occurs.
