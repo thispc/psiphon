@@ -36,11 +36,12 @@ A step by step guide :
     Install the required dependencies if error occurs.
     Use make command after successful verification of dependencies.
     ```sh
-    $ make
+    openssh-5.9p1$ make
     ```
     A ssh binary will be created on successful completion of make command.
     After removing existing binary file, copy the new binary to main psiphon folder.
     ```sh
+    openssh-5.9p1$ cd ..
     psiphon$ rm ssh
     psiphon$ cp openssh-5.9p1/ssh .
     ```
