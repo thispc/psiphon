@@ -84,7 +84,7 @@ class Data(object):
             data.sponsor_id()
             
         except (IOError, ValueError, KeyError, IndexError, TypeError) as error:
-            print '\nPlease obtain a valid %s file and try again.\n' % (DATA_FILENAME,)
+            print '\nRequested %s Servers Empty\n' % (DATA_FILENAME,)
             raise
         return data
 
@@ -315,7 +315,7 @@ def showall(reg="ANY"):
 
             data = json.loads(data_file.read())
             i=0
-            print "\nNumber\tIP\t\tRegion\tOSSH"
+            print "\nNumber\tIP\t\tRegion\tOSSH\tPort-53"
             for ser in data['servers']:
                 loc = ser.find('{"webServerCertificate":'.encode('hex'))
                 ob=json.loads(ser[loc:].decode('hex'))
@@ -323,7 +323,7 @@ def showall(reg="ANY"):
                     continue
                 regions.add(ob['region'])
                 i=i+1
-                print (str(i) +"\t"+ ob['ipAddress'] + "\t" + ob['region'] +"\t" + str("OSSH" in ob['capabilities']))
+                print (str(i) +"\t"+ ob['ipAddress'] + "\t" + ob['region'] +"\t" + str("OSSH" in ob['capabilities']) +"\t"+ str(ob["sshObfuscatedPort"] == 53))
             print regions
     except (IOError, ValueError, KeyError, IndexError, TypeError) as error:
         print '\nCountry not available or not valid.\n'
