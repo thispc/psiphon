@@ -107,6 +107,7 @@ A step by step guide :
     ```
     
     Psiphon should now be running successfully on your machine.
+
 ## Commands:
 ```sh
 psiphon$ python psi_client.py -h
