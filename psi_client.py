@@ -29,7 +29,7 @@ import wget
 
 SOCKS_PORT = 1080
 DATA_FILENAME = "ANY"
-
+ossh_glob=False
 number=0
 
 
@@ -62,6 +62,12 @@ class Data(object):
                     loc = i.find('{"webServerCertificate":'.encode('hex'))
                     ob=json.loads(i[loc:].decode('hex'))
                     if(ob["region"] == DATA_FILENAME or DATA_FILENAME == "ANY"):
+                        print ossh_glob
+                        if(ossh_glob == False):
+                            sahi = ("OSSH" in js["capabilities"]) and (js["sshObfuscatedPort"] == 53)
+                            print sahi
+                            if sahi==False:
+                                continue
                         temp["servers"].append(i)
                 if number==0:
                     data = Data(temp)
@@ -294,9 +300,7 @@ def update():
         loc = i.find('{"webServerCertificate":'.encode('hex'))
         js = i[loc:].decode('hex')
         js = json.loads(js)
-        sahi = ("OSSH" in js["capabilities"]) and (js["sshObfuscatedPort"] == 53)
-        if sahi==False:
-            continue
+        
         regions["servers"].append(i)
         
     json.dump(regions, open('servers.dat', 'w'))
@@ -313,14 +317,11 @@ def showall(reg="ANY"):
             i=0
             print "\nNumber\tIP\t\tRegion\tOSSH"
             for ser in data['servers']:
-
-                
                 loc = ser.find('{"webServerCertificate":'.encode('hex'))
                 ob=json.loads(ser[loc:].decode('hex'))
-                regions.add(ob['region'])
-                if(ob['region']!=reg and reg!="ANY"):
+                if((ob['region']!=reg and reg!="ANY") or (ossh_glob == False and (("OSSH" not in ob["capabilities"]) or (ob["sshObfuscatedPort"] != 53)) ) ):
                     continue
-
+                regions.add(ob['region'])
                 i=i+1
                 print (str(i) +"\t"+ ob['ipAddress'] + "\t" + ob['region'] +"\t" + str("OSSH" in ob['capabilities']))
             print regions
@@ -329,7 +330,7 @@ def showall(reg="ANY"):
         sys.exit(2)
 
 if __name__ == "__main__":
-
+    
     parser = optparse.OptionParser('usage: %prog [options]')
     parser.add_option("--expose", "-e", dest="expose",     
                         action="store_true", help="Expose SOCKS proxy to the network")
@@ -340,8 +341,10 @@ if __name__ == "__main__":
     parser.add_option("--port", "-p", dest="port",action="store",type=int, help="Local Port")
     parser.add_option("--update", "-u", dest="uflag",action="store_true", help="Update Servers")
     parser.add_option("--sid", "-i", dest="sid",action="store",type=int, help="Server number")
-    
+    parser.add_option("--all", "-a", dest="ossh_val",action="store_true", help="Include Non OSSH servers also")
     (options, args) = parser.parse_args()
+    if options.ossh_val is not None:
+        ossh_glob = options.ossh_val
     if (options.uflag):
         update()
         sys.exit(2)
