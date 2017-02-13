@@ -4,7 +4,7 @@ MAINTAINER Tanmay Gupta <tanmay.tat11@gmail.com> Pulkit Chawla <pulkitchawl@gmai
 
 RUN apt-get update
 
-RUN apt-get install git
+RUN apt-get -y install git
 
 RUN /bin/bash -c “cd ~/"
 
