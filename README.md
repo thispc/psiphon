@@ -160,6 +160,35 @@ psiphon$ python psi_client.py -e
 ```sh
 psiphon$ python psi_client.py -e -p 1234
 ```
-# For Mac OS X and Windows
+# For Mac OS X and Windows (Docker Instructions)
 
-You can use the docker image of the psiphon client and run psiphon on any OS. Checkout the docker folder of the repo for more detail.
+You can use the docker image of the psiphon client and run psiphon on any OS.
+
+#### Usage:
+
+First Time:
+
+```sh
+Get Docker https://www.docker.com
+```
+```sh
+docker pull thispc/psiphon
+
+docker run -d -it -p 127.0.0.1:1080:1080 --name psiphon thispc/psiphon
+```
+
+#### Subsequent runs:
+
+```sh
+docker start psiphon
+
+docker exec -it psiphon bash
+```
+
+After that you will get access to the shell and can use all the psiphon commands. This method forwards all the docker's traffic on port 1080 (psiphon's default port) to the machine's 1080 port.
+
+PS: remember to use the -e option of psiphon otherwise it will not work
+PPS: If you do not want to use our docker image, it is totally fine. You can create your own docker image with the help of the Dockerfile.
+```sh
+docker build -t psiphon .
+```
