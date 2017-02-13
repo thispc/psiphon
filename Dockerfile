@@ -1,10 +1,12 @@
 FROM ubuntu:14.04
 
-MAINTAINER Tanmay Gupta <tanmay.tat11@gmail.com>
-
-ADD psiphon /root/psiphon
+MAINTAINER Tanmay Gupta <tanmay.tat11@gmail.com> Pulkit Chawla <pulkitchawl@gmail.com>
 
 RUN apt-get update
+
+RUN apt-get -y install git
+
+RUN git clone https://github.com/thispc/psiphon.git /root/psiphon
 
 RUN apt-get -y install python
 
