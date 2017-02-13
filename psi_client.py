@@ -47,6 +47,7 @@ class Data(object):
 
     @staticmethod
     def load():
+        
         try:
             with open("servers.dat", 'r') as data_file:
                 temp=dict()
@@ -196,19 +197,17 @@ def connect_to_server(data, relay, bind_all, test=False):
             connected_performed = True
         except Exception as e:
             print 'DEBUG: connected request: ' + str(e)
-
+    with open('servers.dat','r') as serv_file:
+        tempdata=json.loads(serv_file.read())
+        top_index = tempdata["servers"].index(data.servers()[0])
+        tempdata["servers"].insert(0, tempdata["servers"].pop(top_index))
+    with open('servers.new', 'w') as data_file:
+        data_file.write(json.dumps(tempdata))
+    os.rename('servers.new', 'servers.dat');
     if test:
         print 'Testing connection to ip %s' % server.ip_address
         ssh_connection.disconnect_on_success(test_site=test)
     else:
-        with open('servers.dat','r') as serv_file:
-            tempdata=json.loads(serv_file.read())
-            top_index = tempdata["servers"].index(data.servers()[0])
-            tempdata["servers"].insert(0, tempdata["servers"].pop(top_index))
-        with open('servers.new', 'w') as data_file:
-            data_file.write(json.dumps(tempdata))
-        os.rename('servers.new', 'servers.dat');
-        
         print("SERVER CONNECTED :: " + str(server.extended_config['region']))
         print "IP Address :" + str(server.ip_address)
         
@@ -236,8 +235,11 @@ def _test_executable(path):
     return False
 
 
-def connect(bind_all, test=False):
-    data = Data.load()
+def connect(bind_all,copy="", test=False):
+    if test:
+        data=copy
+    else:
+        data=Data.load()
     while True:
         top=data.servers()[0]
         loc = top.find('{"webServerCertificate":'.encode('hex'))
@@ -267,7 +269,7 @@ def connect(bind_all, test=False):
             if not data.move_first_server_entry_to_bottom():
                 print 'DEBUG: could not reorder servers'
                 
-            data.save()
+            #data.save()
             print 'Trying next server...'
 
 
@@ -275,7 +277,7 @@ def test_all_servers(bind_all=False):
 
     data = Data.load()
     for _ in data.servers():
-        connect(bind_all, test=True)
+        connect(bind_all,data, test=True)
         print 'DEBUG: moving server to bottom'
         if not data.move_first_server_entry_to_bottom():
             print "could not reorder servers"
