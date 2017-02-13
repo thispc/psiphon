@@ -75,7 +75,7 @@ A step by step guide :
     For further filtering region wise, add -r filter to the above commands.
     Ex, For India Servers (only ossh ones) :
     ```sh
-    psiphon$ python psi_client.py -s -a -r IN
+    psiphon$ python psi_client.py -s -r IN
     ```
 - ##### Final Step
     Use the Following command to run psiphon:
