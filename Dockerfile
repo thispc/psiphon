@@ -6,9 +6,7 @@ RUN apt-get update
 
 RUN apt-get -y install git
 
-RUN /bin/bash -c “cd ~/"
-
-RUN git clone https://github.com/thispc/psiphon.git
+RUN git clone https://github.com/thispc/psiphon.git /root/psiphon
 
 RUN apt-get -y install python
 
