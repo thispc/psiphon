@@ -164,9 +164,7 @@ psiphon$ python psi_client.py -e -p 1234
 
 You can use the docker image of the psiphon client and run psiphon on any OS.
 
-#### Usage:
-
-First Time:
+#### First Time:
 
 ```sh
 Get Docker https://www.docker.com
