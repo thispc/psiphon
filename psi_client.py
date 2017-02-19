@@ -29,6 +29,7 @@ import wget
 
 SOCKS_PORT = 1080
 DATA_FILENAME = "ANY"
+FILE="servers.dat"
 ossh_glob=False
 number=0
 
@@ -49,7 +50,7 @@ class Data(object):
     def load():
         
         try:
-            with open("servers.dat", 'r') as data_file:
+            with open(FILE, 'r') as data_file:
                 temp=dict()
                 temp2=dict()
                 temp["propagation_channel_id"] = "FFFFFFFFFFFFFFFF"
@@ -85,8 +86,8 @@ class Data(object):
             data.sponsor_id()
             
         except (IOError, ValueError, KeyError, IndexError, TypeError) as error:
-            print '\nRequested %s Servers Empty\n' % (DATA_FILENAME,)
-            raise
+            print '\nRequested Servers Not Present\n'
+            sys.exit(2)
         return data
 
     def save(self):
@@ -311,9 +312,8 @@ def update():
 
 def showall(reg="ANY"):
     regions=Set()
-
     try:
-        with open("servers.dat", 'r') as data_file:
+        with open(FILE, 'r') as data_file:
 
             data = json.loads(data_file.read())
             i=0
@@ -328,9 +328,62 @@ def showall(reg="ANY"):
                 print (str(i) +"\t"+ ob['ipAddress'] + "\t" + ob['region'] +"\t" + str("OSSH" in ob['capabilities']) +"\t"+ str(ob["sshObfuscatedPort"] == 53))
             print regions
     except (IOError, ValueError, KeyError, IndexError, TypeError) as error:
-        print '\nCountry not available or not valid.\n'
+        print '\nDoes Not Exist.\n'
         sys.exit(2)
+def updatepsiclient():
 
+    url='''https://github.com/thispc/psiphon/archive/master.zip'''
+    wget.download(url)
+    os.system("unzip psiphon-master.zip")
+    os.rename('ssh','ssh.back')
+    os.system("cp -R ./psiphon-master/* ./")
+    os.rename('ssh.back','ssh')
+    os.remove('psiphon-master.zip')
+    shutil.rmtree('psiphon-master')
+    
+def save_a_server(j):
+    try:
+        with open("servers.dat", 'r') as data_file:
+            data = json.loads(data_file.read())
+            if os.path.isfile('saved_servers.dat') == False:
+                with open("saved_servers.dat","w") as servers:
+                    temp = dict()
+                    temp["propagation_channel_id"] = "FFFFFFFFFFFFFFFF"
+                    temp["sponsor_id"] = "FFFFFFFFFFFFFFFF"
+                    temp["servers"] = list()
+                    servers.write(json.dumps(temp))
+            with open("saved_servers.dat","r") as s:
+                tempdata=json.loads(s.read())
+            spec=""
+            i=0
+            for ser in data['servers']:
+                loc = ser.find('{"webServerCertificate":'.encode('hex'))
+                ob=json.loads(ser[loc:].decode('hex'))
+                if((ob['region']!=DATA_FILENAME and DATA_FILENAME!="ANY") or (ossh_glob == False and (("OSSH" not in ob["capabilities"]) or (ob["sshObfuscatedPort"] != 53)) ) ):
+                    continue
+                i=i+1
+                if(i==j):
+                    spec=ser
+                    break
+            if spec not in tempdata["servers"]: 
+                tempdata["servers"].append(spec);
+            else:
+                print 
+                raise ValueError("Saved before Already")
+            with open("saved_servers.dat","w") as s:
+                s.write(json.dumps(tempdata))
+        print "Successfully Saved "+str(i)+" server"
+    except (IOError, ValueError, KeyError, IndexError, TypeError) as error:
+        print error
+        print '\nError in saving..exiting...\n'
+        sys.exit(2)
+def clear_saved_server():
+    try:
+        os.remove("saved_servers.dat")
+        print "Cleared Saved servers"
+    except (OSError,IOError) as error:
+        print "Already Empty"    
+    
 if __name__ == "__main__":
     
     parser = optparse.OptionParser('usage: %prog [options]')
@@ -344,14 +397,30 @@ if __name__ == "__main__":
     parser.add_option("--update", "-u", dest="uflag",action="store_true", help="Update Servers")
     parser.add_option("--sid", "-i", dest="sid",action="store",type=int, help="Server number")
     parser.add_option("--all", "-a", dest="ossh_val",action="store_true", help="Include Non OSSH servers also")
+    parser.add_option("--upgrade", "-U", dest="Upflag",action="store_true", help="update psiphon")
+    parser.add_option("--save", "-S", dest="csid",action="store",type=int, help="Server Number to be saved")
+    parser.add_option("--clear", "-C", dest="cflag",action="store_true", help="Clear Saved Servers")
+    parser.add_option("--switch", "-v", dest="vflag",action="store_true", help="Use Saved Servers")
+
     (options, args) = parser.parse_args()
+    if (options.vflag):
+        FILE="saved_servers.dat"
     if options.ossh_val is not None:
         ossh_glob = options.ossh_val
+    if (options.Upflag):
+        updatepsiclient()
+        sys.exit(2)
     if (options.uflag):
         update()
         sys.exit(2)
     if options.region is not None:
         DATA_FILENAME=options.region
+    if options.csid is not None:
+        save_a_server(options.csid)
+        sys.exit(2)
+    if options.cflag:
+        clear_saved_server()
+        sys.exit(2)
     if options.show_servers:
         showall(DATA_FILENAME)
         sys.exit(2)
