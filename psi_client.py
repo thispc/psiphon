@@ -211,8 +211,14 @@ def connect_to_server(data, relay, bind_all, test=False):
     else:
         print("SERVER CONNECTED :: " + str(server.extended_config['region']))
         print "IP Address :" + str(server.ip_address)
-        
-
+        #For redsocks
+        curr=dict()
+        if(SOCKS_PORT == 1080):
+            with open("connected_server","w") as cc:
+                curr["ip"]=str(server.ip_address)
+                curr["port"]=SOCKS_PORT
+                cc.write(json.dumps(curr))
+        #For redsocks
         print 'Press Ctrl-C to terminate.'
         try:
             ssh_connection.wait_for_disconnect()
@@ -326,6 +332,7 @@ def showall(reg="ANY"):
                 regions.add(ob['region'])
                 i=i+1
                 print (str(i) +"\t"+ ob['ipAddress'] + "\t" + ob['region'] +"\t" + str("OSSH" in ob['capabilities']) +"\t"+ str(ob["sshObfuscatedPort"] == 53))
+            
             print regions
     except (IOError, ValueError, KeyError, IndexError, TypeError) as error:
         print '\nDoes Not Exist.\n'
@@ -365,6 +372,8 @@ def save_a_server(j):
                 if(i==j):
                     spec=ser
                     break
+            if spec=="":
+                raise ValueError("Invalid number")
             if spec not in tempdata["servers"]: 
                 tempdata["servers"].append(spec);
             else:
@@ -374,8 +383,20 @@ def save_a_server(j):
                 s.write(json.dumps(tempdata))
         print "Successfully Saved "+str(i)+" server"
     except (IOError, ValueError, KeyError, IndexError, TypeError) as error:
-        print error
         print '\nError in saving..exiting...\n'
+        sys.exit(2)
+
+def remove_saved_server(j):
+    try:
+        data=""
+        with open("saved_servers.dat", 'r') as data_file:
+            data = json.loads(data_file.read())
+            del data["servers"][j-1]
+        with open("saved_servers.dat", 'w') as data_file:
+            data_file.write(json.dumps(data))
+        print "\nSuccessfully deleted "+str(j)+" server from saved servers\n"
+    except (IOError, ValueError, KeyError, IndexError, TypeError) as error:
+        print '\nError in deleting..exiting...\n'
         sys.exit(2)
 def clear_saved_server():
     try:
@@ -383,7 +404,7 @@ def clear_saved_server():
         print "Cleared Saved servers"
     except (OSError,IOError) as error:
         print "Already Empty"    
-    
+
 if __name__ == "__main__":
     
     parser = optparse.OptionParser('usage: %prog [options]')
@@ -401,6 +422,8 @@ if __name__ == "__main__":
     parser.add_option("--save", "-S", dest="csid",action="store",type=int, help="Server Number to be saved")
     parser.add_option("--clear", "-C", dest="cflag",action="store_true", help="Clear Saved Servers")
     parser.add_option("--switch", "-v", dest="vflag",action="store_true", help="Use Saved Servers")
+    parser.add_option("--delete", "-d", dest="dele",action="store",type=int, help="Delete a saved server")
+
 
     (options, args) = parser.parse_args()
     if (options.vflag):
@@ -420,6 +443,9 @@ if __name__ == "__main__":
         sys.exit(2)
     if options.cflag:
         clear_saved_server()
+        sys.exit(2)
+    if options.dele is not None:
+        remove_saved_server(options.dele)
         sys.exit(2)
     if options.show_servers:
         showall(DATA_FILENAME)
