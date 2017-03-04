@@ -26,6 +26,7 @@ import subprocess
 import optparse
 import sys
 import wget
+import shutil
 
 SOCKS_PORT = 1080
 DATA_FILENAME = "ANY"
@@ -339,7 +340,9 @@ def showall(reg="ANY"):
         sys.exit(2)
 def updatepsiclient():
 
-    url='''https://github.com/thispc/psiphon/archive/master.zip'''
+    url="https://github.com/thispc/psiphon/archive/master.zip"
+    print "\nThis may take some time. Keep your net ON!\n"
+    print url
     wget.download(url)
     os.system("unzip psiphon-master.zip")
     os.rename('ssh','ssh.back')
