@@ -188,6 +188,11 @@ docker exec -it psiphon bash
 
 After that you will get access to the shell and can use all the psiphon commands. This method forwards all the docker's traffic on port 1080 (psiphon's default port) to the machine's 1080 port.
 
+To stop psiphon
+```sh
+docker stop psiphon
+```
+
 PS: remember to use the -e option of psiphon otherwise it will not work
 
 PPS: You can also use docker on linux if you do not wan't to compile your own ssh binary. Docker is system independent.
