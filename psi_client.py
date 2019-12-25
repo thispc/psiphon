@@ -62,8 +62,12 @@ class Data(object):
                 temp2["servers"] = list()
                 tempdata=json.loads(data_file.read())
                 for i in tempdata["servers"]:
-                    loc = i.find('{"webServerCertificate":'.encode('hex'))
-                    ob=json.loads(i[loc:].decode('hex'))
+                    #dunno why but these lines are broken and can't be used anymore.
+                    #but the server_list file format hasn't changed that much so We can still use these codes from Psiphon
+                    #So I will replace these lines with my code, hopefully it will work
+                    '''loc = i.find('{"webServerCertificate":'.encode('hex'))
+                    ob=json.loads(i[loc:].decode('hex'))'''
+                    ob = json.loads(i.decode('hex').split()[-1])
                     if(ob["region"] == DATA_FILENAME or DATA_FILENAME == "ANY"):
                         
                         if(ossh_glob == False):
@@ -85,7 +89,7 @@ class Data(object):
             data.servers()[0]
             data.propagation_channel_id()
             data.sponsor_id()
-            
+
         except (IOError, ValueError, KeyError, IndexError, TypeError) as error:
             print '\nRequested Servers Not Present\n'
             sys.exit(2)
@@ -174,31 +178,33 @@ def connect_to_server(data, relay, bind_all, test=False):
         print (server.ip_address)
         print (server.extended_config)
         server
+    #Looks like We cannot use handshaking method anymore
+    #but it works without handshake so I will just comment it
     handshake_performed = False
-    if not server.can_attempt_relay_before_handshake(relay):
+    '''if not server.can_attempt_relay_before_handshake(relay):
         handshake_response = do_handshake(server, data, relay)
-        handshake_performed = True
+        handshake_performed = True'''
 
     ssh_connection = make_ssh_connection(server, relay, bind_all)
     ssh_connection.test_connection()
 
     server.set_socks_proxy(SOCKS_PORT)
 
-    if not handshake_performed:
+    '''if not handshake_performed:
         try:
             handshake_response = do_handshake(server, data, relay)
             handshake_performed = True
         except Exception as e:
-            print 'DEBUG: handshake request: ' + str(e)
+            print 'DEBUG: handshake request: ' + str(e)'''
 
     connected_performed = False
-    if handshake_performed:
+    '''if handshake_performed:
         print_sponsor_message(handshake_response)
         try:
             server.connected(relay)
             connected_performed = True
         except Exception as e:
-            print 'DEBUG: connected request: ' + str(e)
+            print 'DEBUG: connected request: ' + str(e)'''
     with open('servers.dat','r') as serv_file:
         tempdata=json.loads(serv_file.read())
         top_index = tempdata["servers"].index(data.servers()[0])
@@ -250,8 +256,10 @@ def connect(bind_all,copy="", test=False):
         data=Data.load()
     while True:
         top=data.servers()[0]
-        loc = top.find('{"webServerCertificate":'.encode('hex'))
-        ob=json.loads(top[loc:].decode('hex'))
+        #This line is also broken, same as the above
+        """loc = top.find('{"webServerCertificate":'.encode('hex'))
+        ob=json.loads(top[loc:].decode('hex'))"""
+        ob = json.loads(top.decode('hex').split()[-1])
         
         print "Trying to connect to "+ob["region"]+" : " + ob["ipAddress"]
 
@@ -307,10 +315,14 @@ def update():
     regions["sponsor_id"] = "FFFFFFFFFFFFFFFF"
     regions["servers"] = list()
     for i in serv:
+        """
+        #Why do you even need these lines if you won't use these variables again lmao
+        #Although This code can be fixed, it's not needed in here so I will just simply comment it
         loc = i.find('{"webServerCertificate":'.encode('hex'))
         js = i[loc:].decode('hex')
         js = json.loads(js)
-        
+        """
+
         regions["servers"].append(i)
         
     json.dump(regions, open('servers.dat', 'w'))
