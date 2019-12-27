@@ -180,31 +180,32 @@ def connect_to_server(data, relay, bind_all, test=False):
         server
     #Looks like We cannot use handshaking method anymore
     #but it works without handshake so I will just comment it
+    #no shit, it won't work without handshake. me fuckin stoopid
     handshake_performed = False
-    '''if not server.can_attempt_relay_before_handshake(relay):
+    if not server.can_attempt_relay_before_handshake(relay):
         handshake_response = do_handshake(server, data, relay)
-        handshake_performed = True'''
+        handshake_performed = True
 
     ssh_connection = make_ssh_connection(server, relay, bind_all)
     ssh_connection.test_connection()
 
     server.set_socks_proxy(SOCKS_PORT)
 
-    '''if not handshake_performed:
+    if not handshake_performed:
         try:
             handshake_response = do_handshake(server, data, relay)
             handshake_performed = True
         except Exception as e:
-            print 'DEBUG: handshake request: ' + str(e)'''
+            print 'DEBUG: handshake request: ' + str(e)
 
     connected_performed = False
-    '''if handshake_performed:
+    if handshake_performed:
         print_sponsor_message(handshake_response)
         try:
             server.connected(relay)
             connected_performed = True
         except Exception as e:
-            print 'DEBUG: connected request: ' + str(e)'''
+            print 'DEBUG: connected request: ' + str(e)
     with open('servers.dat','r') as serv_file:
         tempdata=json.loads(serv_file.read())
         top_index = tempdata["servers"].index(data.servers()[0])
