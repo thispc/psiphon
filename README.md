@@ -1,3 +1,4 @@
+* If you get the error about libcrypto.so.1.0.0, You have to build a new ssh binary or just simply remove the ssh executable to avoid the error. It will automatically detect it and will connect with SSH instead of OSSH.
 # psiphon
 
 Psiphon is a circumvention tool from Psiphon Inc. that utilizes VPN, SSH and HTTP Proxy technology to provide you with uncensored access to Internet content. Your Psiphon client will automatically learn about new access points to maximize your chances of bypassing censorship.

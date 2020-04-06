@@ -57,15 +57,19 @@ class SSHConnection(object):
 
     def connect(self):
         self.ssh = pexpect.spawn(self.command_line())
+        print self.command_line()
         # Print ssh output:
         #self.ssh.logfile_read = sys.stdout
-        prompt = self.ssh.expect([self._ssh_fingerprint(), 'Password:'])
+        #Something was not right in here. so I touched it a bit
+        prompt = self.ssh.expect(['fingerprint', 'password:'])
         if prompt == 0:
             self.ssh.sendline('yes')
-            self.ssh.expect('Password:')
+            self.ssh.expect('password:')
             self.ssh.sendline(self.password)
+            print "I've sent password: " + self.password
         else:
             self.ssh.sendline(self.password)
+            print "Ive sent password: " + self.password
 
     def test_connection(self):
         MAX_WAIT_SECONDS = 10
